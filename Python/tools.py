@@ -33,14 +33,14 @@ def __isMA(wlplst):
             return False
     return True
     
-def DOPselect(D):
+def DOPselect(N,cols):
     """
     Generates columns of candidate designs according to the DOP selection criterion.
 
     Parameters
     ----------
-    D : Design() 
-        Regular two-level design.
+    cols : list
+        List of columns numbers.
 
     Returns
     -------
@@ -48,11 +48,12 @@ def DOPselect(D):
         List of lists of columns numbers, in 1-based indexing, of the selected designs.
 
     """
-    B = Bmat(D.r)
-    candicols = [i for i in range(1,D.N) if i not in D.cols]
+    r = int(np.log2(N))
+    B = Bmat(r)
+    candicols = [i for i in range(1,N) if i not in cols]
     out = []
     for col in candicols:
-        tempcols = D.cols + [col]
+        tempcols = cols + [col]
         Dc = B[:,[i-1 for i in tempcols]]
         wlplst = []
         for j in range(Dc.shape[1]):
@@ -73,7 +74,7 @@ def __pow2Fac(x,char=False):
         i <<= 1
     return powers
 
-def STselect(D,order="rL"):
+def STselect(N,cols,order="rL"):
     """
      Generates columns of candidate designs according to the search-table selection method, using the order specified.
 
@@ -92,18 +93,14 @@ def STselect(D,order="rL"):
 
     """
     if order == "rL":
-        ordint = list(range(1,D.N))
+        ordint = list(range(1,N))
     elif order == "cL":
-        ordint = [sum(j) for j in sorted([__pow2Fac(i) for i in range(1,16)],key=lambda x: (len(x),x))]
+        ordint = [sum(j) for j in sorted([__pow2Fac(i) for i in range(1,N)],key=lambda x: (len(x),x))]
     else:
         ValueError("Unknown order")
-    candicols = [i for i in range(1,D.N) if i not in D.cols]
-    return [D.cols+[col] for col in candicols if ordint.index(col)>ordint.index(D.cols[-1])]
+    candicols = [i for i in range(1,N) if i not in cols]
+    return [cols+[col] for col in candicols if ordint.index(col)>ordint.index(cols[-1])]
 
-    
-    
-
-#%% Partition
 
 
 #%% Isomorphism
