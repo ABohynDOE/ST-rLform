@@ -3,6 +3,7 @@ import numpy as np
 import oapackage as oa 
 from itertools import combinations,permutations
 from HadamardTools import selectIsomorphismClasses
+import sys
 
 #%% Matrix
 ### Basic factor matrix
@@ -134,7 +135,28 @@ def NAUTYiso(C,r):
     return [C[x] for x in list(zz)]
 
 ### LMC isomorphism
-def __in_rLform(G):
+def bi2de(binary):
+    # Same basic function as matlab bi2de function
+    # Convert a binary array to a decimal number
+    # Read from right to left in binary array
+    bin_temp = 0
+    bin_res = np.zeros(len(binary), dtype=int)
+    for i in range(len(binary)):
+        for j in range(len(binary[i])):
+            bin_temp = bin_temp + binary[i][j] * (2 ** j)
+        bin_res[i] = bin_temp
+        bin_temp = 0
+    return bin_res
+
+
+def rLsmaller(L,Ls):
+    a = [i for i in bi2de(L.T) if i not in bi2de(Ls.T)]
+    if a == []:
+        return False
+    b = [i for i in bi2de(Ls.T) if i not in bi2de(L.T)]
+    return a[0] < b[0]    
+
+def __rLform(N,cols):
     """
     Checks if a matrix is in rL-form
 
@@ -151,56 +173,40 @@ def __in_rLform(G):
         Returns True if the array is in rL-form.
 
     """
-    # Find the rL order of G
-    Gorder = [int(''.join([str(i) for i in G[:,i]][::-1]),2) for i in range(G.shape[1])]
-    # re-order G in rL order
-    G =  G[:,np.argsort(Gorder)]
-    # Find index of the B.F. in G
-    LrefAFindex = [i for i in range(G.shape[1]) if sum(G[:,i]) >1]
+    # Reduced design matrix of the columns
+    r = int(np.log2(N))
+    a = np.array(sorted(cols),dtype=np.uint8)
+    a = a[...,None]
+    b = np.unpackbits(a.T,axis=0,bitorder='little',count=r)
+    S = np.array(b,dtype=int)
+    
     # Reference L matrix
-    Lref = G[:,LrefAFindex]
+    Lref =  S[:,S.sum(0)> 1]
     # All B.F. set possibilities
-    rposs = list(combinations(range(G.shape[1]),G.shape[0]))
+    rposs = list(combinations(range(S.shape[1]),r))
     # All row permutations 
-    perm = list(permutations(range(G.shape[0])))
+    perm = list(permutations(range(r)))
     for r in rposs:
         # # Reject set where last added factor is not included
         # if lastfac-1 not in r:
         #     continue
         # Define new set of B.F.
-        R = G[:,r]
+        R = S[:,r]
         # Check if R is singular
-        if np.linalg.det(R) == 0:
+        if np.linalg.cond(R) >= 1/sys.float_info.epsilon:
             continue 
         # Compute new interactions matrix - L
-        K = G[:,[i for i in range(G.shape[1]) if i not in r]]
+        K = S[:,[i for i in range(S.shape[1]) if i not in r]]
         L = np.linalg.solve(R,K).astype(int)%2
         # Permute the rows
         for p in perm:
             Lstar = L[p,:]
             # Re-arrange L in rL order
-            Lindex = [int(''.join([str(i) for i in Lstar[:,i]][::-1]),2) for i in range(Lstar.shape[1])]
-            Lstar = Lstar[:,np.argsort(Lindex)]
-            
+            Lstar = Lstar[:,np.argsort(bi2de(Lstar.T))]
             # Test if L is rL-smaller than Lref
-            if list(Lstar.flatten('F')[::-1]) < list(Lref.flatten('F')[::-1]):
-                print(L,r,p)
+            if rLsmaller(Lstar,Lref):
                 return False
     return True
 
-def rLiso(C,r):
-    G = Gmat(r)
-    al = [G[:,[i-1 for i in cols]] for cols in C]
-    return [C[i] for i in range(len(al)) if __in_rLform(al[i])]
-
-#%% Design class
-class Design:
-    def __init__(self,N,cols):
-        self.N = N
-        self.cols = cols
-        self.n = len(cols)
-        self.r = int(np.log2(self.N))
-        self.k = self.n - self.r
-    
-    def __repr__(self):
-        return 'Design: %i runs - cols = %s'%(self.N,str(self.cols))
+def rLiso(N,C):
+    return [col for col in C if __rLform(N, col)]
