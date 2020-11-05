@@ -179,6 +179,7 @@ def __rLform(N,cols):
     a = a[...,None]
     b = np.unpackbits(a.T,axis=0,bitorder='little',count=r)
     S = np.array(b,dtype=int)
+    #lastfac  = cols[-1]
     
     # Reference L matrix
     Lref =  S[:,S.sum(0)> 1]
@@ -193,8 +194,10 @@ def __rLform(N,cols):
         # Define new set of B.F.
         R = S[:,r]
         # Check if R is singular
-        if np.linalg.cond(R) >= 1/sys.float_info.epsilon:
-            continue 
+        # if np.linalg.cond(R) >= 1/sys.float_info.epsilon:
+        #     continue 
+        if np.linalg.det(R) <= 0:
+            continue
         # Compute new interactions matrix - L
         K = S[:,[i for i in range(S.shape[1]) if i not in r]]
         L = np.linalg.solve(R,K).astype(int)%2
