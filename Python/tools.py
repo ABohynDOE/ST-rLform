@@ -8,26 +8,16 @@ from HadamardTools import selectIsomorphismClasses
 ### Basic factor matrix
 def Rmat(r):
     """ Creates the basic factors matrix (N x r), for r basic factors."""
-    R = np.zeros((int(2**r),r))
-    # Alternates 0 and 1 in columns until (0,1) is repeated N/2 times
-    for i in range(r):
-        R[:,i] = ([0]*(2**(r-(i+1)))+[1]*(2**(r-(i+1))))*(2**i)
-    return R.astype(int)
+    b = Gmat(4)
+    return np.flip(b.T,axis=1)
 
 ### Reduced generalized interaction matrix
 def Gmat(r):
     """ Creates the reduced generalized interaction matrix G (r x N-1), for r basic factors."""
-    G = np.zeros((r,2**r-1))
-    for i in range(int(2**r-1)):
-        # Creates the B.F. columns
-        if np.log2(i+1).is_integer():
-            G[int(np.log2(i+1)),i] = 1
-        # Creates the interactions columns as sum of the B.F. modulo 2
-        else:
-            a = (i+1)-int(2**int(np.log2(i+1)))
-            b = (i+1)-a
-            G[:,i] = G[:,a-1] + G[:,b-1] 
-    return G.astype(int)
+    a = np.array(range(1,int(2**(r))),dtype=np.uint8)
+    a = a[...,None]
+    b = np.unpackbits(a.T,axis=0,bitorder='little',count=r)
+    return np.array(b,dtype=int)
 
 ### Full generalized interaction matrix
 def Bmat(r):
