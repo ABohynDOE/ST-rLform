@@ -1,8 +1,8 @@
 %% ST - rL-form combination
 % Input parameters
-N = 16; % Nbr of runs
+N = 32; % Nbr of runs
 verbose = true; % Print info about enumeration
-maxfac = 15; % Max number of factors in the catalog
+maxfac = 8; % Max number of factors in the catalog
 
 % Initiate the catalog
 bf = 2.^(0:log2(N)-1); % basic factors
@@ -43,7 +43,7 @@ for n = log2(N)+1:maxfac
     outcols = [];
     % Isomorphism reduction of the candidate designs set
     for ii = 1:size(candicols,1)
-        if rLform(candicols(ii,:)) % Only keep rL-minimal designs
+        if rLmin(candicols(ii,:)) % Only keep rL-minimal designs
             outcols = [outcols; candicols(ii,:)];
         end
     end
