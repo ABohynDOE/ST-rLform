@@ -3,7 +3,7 @@ import numpy as np
 import oapackage as oa 
 from itertools import combinations,permutations
 from HadamardTools import selectIsomorphismClasses
-import sys
+from scipy.linalg import qr
 
 #%% Matrix
 ### Basic factor matrix
@@ -156,6 +156,17 @@ def rLsmaller(L,Ls):
     b = [i for i in bi2de(Ls.T) if i not in bi2de(L.T)]
     return a[0] < b[0]    
 
+
+def solve_minnonzero(A, b):
+    x1, res, rnk, s = np.linalg.lstsq(A, b,rcond=None)
+    if rnk == A.shape[1]:
+        return x1   # nothing more to do if A is full-rank
+    Q, R, P = qr(A.T, mode='full', pivoting=True)
+    Z = Q[:, rnk:].conj()
+    C = np.linalg.solve(Z[rnk:], -x1[rnk:])
+    return x1 + Z.dot(C)
+
+
 def __rLform(N,cols):
     """
     Checks if a matrix is in rL-form
@@ -179,7 +190,7 @@ def __rLform(N,cols):
     a = a[...,None]
     b = np.unpackbits(a.T,axis=0,bitorder='little',count=r)
     S = np.array(b,dtype=int)
-    lastfac  = cols[-1]
+    #lastfac  = cols[-1]
     
     # Reference L matrix
     Lref =  S[:,S.sum(0)> 1]
@@ -194,14 +205,19 @@ def __rLform(N,cols):
         # Define new set of B.F.
         R = S[:,r]
         # Check if R is singular
-        if np.linalg.cond(R) >= 1/sys.float_info.epsilon:
+        if np.linalg.cond(R) >= 1/np.finfo(float).eps or np.linalg.det(R)==0:
+            print("R matrix is singular")
+            print(R)
             continue 
         # Compute new interactions matrix - L
         K = S[:,[i for i in range(S.shape[1]) if i not in r]]
-        L = np.linalg.solve(R,K).astype(int)%2
+        L = solve_minnonzero(R,K)
+        L = L%2
         # Check that L is the same rank as K
-        if np.linalg.matrix_rank(L) != np.linalg.matrix_rank(K):
-            continue
+        if not np.array_equal(L, L.astype(bool)):
+            L = L.astype(int)
+            if not np.array_equal(L, L.astype(bool)):
+                continue
         # Permute the rows
         for p in perm:
             Lstar = L[p,:]
