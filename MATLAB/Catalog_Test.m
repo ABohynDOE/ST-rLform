@@ -1,6 +1,6 @@
 %% ST - rL-form combination
 % Input parameters
-N = 32; % Nbr of runs
+N = 16; % Nbr of runs
 verbose = true;
 
 % Initiate the catalog
