@@ -21,7 +21,7 @@ function candicols = STselect(N,cols,lastfac,order,sorted)
     idx = 1;
     % Initiate the different orders
     if strcmp(order,'cL')
-        [~,ref] = sort(sum(de2bi(1:N-1),2));
+        [~,ref] = sort(sum(num2col(1:N-1)));
     elseif strcmp(order,'rL')
         ref = 1:N-1;
     end
