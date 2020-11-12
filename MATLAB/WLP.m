@@ -1,4 +1,4 @@
-function w = WLP(cols,s)
+function wlp = WLP(cols,s)
     % WLP Word-length pattern of a design.
     %   WLP(cols) outputs the word-length pattern, a vector where the ith
     %   element is the number of words of length i, given the columns of
@@ -8,18 +8,36 @@ function w = WLP(cols,s)
     %   length less than s.
     
     arguments
-        cols (1,:) {mustBeVector, mustBeNumeric, mustBePositive}
+         cols (:,:) {mustBeNumeric, mustBePositive}
         s double {mustBeInteger, mustBePositive, mustBeNumeric} = 3
     end
-    S = de2bi(cols)'; % Reduced design matrix
-    L = S(:,sum(S)>1); % Keep the added factors
-    Ls = (L*(-2))+1; 
-    model = ff2n(size(L,2)); % Enumerate all added factor combination
-    modmat = model(sum(model,2)>0,:); % Only keep 2FI and more
-    X = x2fx(Ls,modmat); % Compute wordlength
-    Xf = [abs((X-1)/(-2));sum(modmat,2)'];
-    vec = sum(Xf,1);
-    edges = 1:max(vec)+1;
-    w = histcounts(vec,edges); % Summarize into WLP
-    w = w(s:end);
+    % Basic values
+    [nd n] = size(cols);
+    r = sum(log2(cols(1,:)) == floor(log2(cols(1,:))));
+    k = n-r;
+    
+    % Basic matrix
+    G = Gmat(r);
+    W = Gmat(k);
+    I = eye(k);
+    
+    % Initiate WLP matrix
+    addcols = cols(:,r+1:end);
+    wlp = zeros(nd,n-2);
+    len = zeros(nd,2^k-1);
+    
+    % Compute each word
+    for ii = 1:nd
+        subG = G(:,addcols(ii,:));
+        wordsubG = cat(1,subG,I);
+        words = mod(wordsubG*W,2);
+        len(ii,:) = sum(words,1);
+    end
+    len(:,2^k) = n+1;
+    
+    % Count frequency for WLP
+    for ii = 1:nd
+        tab = tabulate(len(ii,:));
+        wlp(ii,:) = tab(s:end-1,2)';
+    end
 end

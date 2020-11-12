@@ -6,8 +6,7 @@ end
 %   G = Gmat(r) generates the r-by-(2^r) generalized reduced design
 %       matrix for r basic factors.
 
-%G = de2bi(1:(2^r)-1,'right-msb')';
-G = zeros(r,2^r);
+G = zeros(r,2^r-1);
 G(1,1) = 1;
 for ii = 2:(2^r-1)
     if log2(ii) == floor(log2(ii))
