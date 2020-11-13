@@ -3,8 +3,8 @@ function out = rLsmaller(L1,L2)
     %   rLsmaller(A,B) returns True if A is rL-smaller than B, and False
     %   otherwise.
     
-    a = bi2de(L1');
-    b = bi2de(L2');
+    a = col2num(L1);
+    b = col2num(L2);
     mL1 = a(a~=b); % Find first non-identical column in A
     if isempty(mL1)
         out = false; % If A and B are similar, returns False

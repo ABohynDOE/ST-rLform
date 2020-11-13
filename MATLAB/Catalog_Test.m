@@ -1,8 +1,8 @@
 %% ST - rL-form combination
 % Input parameters
-N = 16; % Nbr of runs
+N = 32; % Nbr of runs
 verbose = true; % Print info about enumeration
-maxfac = 15; % Max number of factors in the catalog
+maxfac = 8; % Max number of factors in the catalog
 
 % Initiate the catalog
 bf = 2.^(0:log2(N)-1); % basic factors

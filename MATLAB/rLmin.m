@@ -9,7 +9,7 @@ function rL = rLmin(cols,lastfac)
     %   rLmin(cols,lastfac) defines lastfac as the number of the last
     %   column added to the candidate design.
     
-    S = de2bi(sort(cols))'; % Reduced design matrix in rL order
+    S = num2col(sort(cols)); % Reduced design matrix in rL order
     rL = true;
     rlst = nchoosek(1:size(S,2),size(S,1)); % All possible set of basic factors
     p = perms(1:size(S,1)); % All possible row permutations
@@ -29,7 +29,7 @@ function rL = rLmin(cols,lastfac)
         end
         for jj = 1:length(p) % For all row permutations
             Lstar = L(p(jj,:),:); % Permute the rows
-            [~,idx] = sort(bi2de(Lstar'));
+            [~,idx] = sort(col2num(Lstar));
             Lstarmin = Lstar(:,idx); % Sort the colums of L in rL-order
             if rLsmaller(Lstarmin,Lref) % Test if new L is rL-smaller
                 rL = false;
