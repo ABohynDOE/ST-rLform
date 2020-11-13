@@ -17,4 +17,3 @@ for ii = 2:(2^r-1)
         G(:,ii) = mod(G(:,a)+G(:,b),2);
     end
 end
-end

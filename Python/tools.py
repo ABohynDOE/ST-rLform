@@ -167,7 +167,7 @@ def solve_minnonzero(A, b):
     return x1 + Z.dot(C)
 
 
-def __rLform(N,cols):
+def __rLform(N,cols,verbose=0):
     """
     Checks if a matrix is in rL-form
 
@@ -192,6 +192,10 @@ def __rLform(N,cols):
     S = np.array(b,dtype=int)
     #lastfac  = cols[-1]
     
+    # Number of singular matrices
+    singRCount = 0
+    
+    
     # Reference L matrix
     Lref =  S[:,S.sum(0)> 1]
     # All B.F. set possibilities
@@ -205,19 +209,24 @@ def __rLform(N,cols):
         # Define new set of B.F.
         R = S[:,r]
         # Check if R is singular
-        if np.linalg.cond(R) >= 1/np.finfo(float).eps or np.linalg.det(R)==0:
-            print("R matrix is singular")
-            print(R)
+        #if np.linalg.cond(R) >= 1/np.finfo(float).eps or np.linalg.det(R)==0:
+        if np.linalg.cond(R) >= 
+            # Count as a singular matrix
+            singRCount += 1;
+            # Print it if verbose is 2 
+            if verbose >= 2:
+                print("R matrix is singular")
+                print(R)
             continue 
         # Compute new interactions matrix - L
         K = S[:,[i for i in range(S.shape[1]) if i not in r]]
-        L = solve_minnonzero(R,K)
-        L = L%2
+        L = abs(np.linalg.solve(R,K)).astype(int)
+        #L = L%2
         # Check that L is the same rank as K
-        if not np.array_equal(L, L.astype(bool)):
-            L = L.astype(int)
-            if not np.array_equal(L, L.astype(bool)):
-                continue
+        # if not np.array_equal(L, L.astype(bool)):
+        #     L = L.astype(int)
+        #     if not np.array_equal(L, L.astype(bool)):
+        #         continue
         # Permute the rows
         for p in perm:
             Lstar = L[p,:]
@@ -225,7 +234,12 @@ def __rLform(N,cols):
             Lstar = Lstar[:,np.argsort(bi2de(Lstar.T))]
             # Test if L is rL-smaller than Lref
             if rLsmaller(Lstar,Lref):
-                print(R,L)
+                if verbose:
+                    print('rL-smaller matrix of added factors found')
+                    print(Lstar)
+                    print('from following basic factors')
+                    print(R)                    
+                    print("Propotion of singular matrices rejected: %.2f %% (%i out of %i)"%(100*singRCount/len(rposs),singRCount,len(rposs)))
                 return False
     return True
 

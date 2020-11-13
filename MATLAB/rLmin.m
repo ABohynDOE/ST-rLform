@@ -3,10 +3,10 @@ function rL = rLmin(cols,lastfac)
         cols (1,:) {mustBeVector, mustBeNumeric, mustBePositive}
         lastfac double {mustBeScalarOrEmpty, mustBeInteger, mustBePositive} = cols(end)
     end
-    % RLFORM Determine if a reduced design matrix in rL-form is rL-minimal.
+    % rLmin Determine if a reduced design matrix in rL-form is rL-minimal.
     %   rLmin(cols) outputs true if the reduced design matrix, in rL-form, 
     %   formed the columns in cols is rL-minimal.
-    %   rLform(cols,lastfac) defines lastfac as the number of the last
+    %   rLmin(cols,lastfac) defines lastfac as the number of the last
     %   column added to the candidate design.
     
     S = num2col(sort(cols)); % Reduced design matrix in rL order

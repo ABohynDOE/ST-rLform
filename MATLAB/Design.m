@@ -9,5 +9,5 @@ function D = Design(N,cols)
     %   are picked from the generalized design matrix B.
     r = log2(N);
     B = mod(Rmat(r)*Gmat(r),2);
-    D = B(:,sorted(cols));
+    D = B(:,sort(cols));
 end
