@@ -1,7 +1,7 @@
 function G = Gmat(r)
-arguments
-    r {mustBeNumeric, mustBePositive, mustBeInteger}
-end
+% arguments
+%     r {mustBeNumeric, mustBePositive, mustBeInteger}
+% end
 % Gmat Generate the generalized reduced design matrix
 %   G = Gmat(r) generates the r-by-(2^r) generalized reduced design
 %       matrix for r basic factors.
