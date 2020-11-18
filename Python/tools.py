@@ -9,7 +9,7 @@ from scipy.linalg import qr
 ### Basic factor matrix
 def Rmat(r):
     """ Creates the basic factors matrix (N x r), for r basic factors."""
-    b = Gmat(4)
+    b = Gmat(r)
     return np.flip(b.T,axis=1)
 
 ### Reduced generalized interaction matrix
@@ -126,9 +126,9 @@ def NAUTYiso(C,r):
     """
     B = Bmat(r)
     # Converts columns to designs in OA
-    al = [oa.array_link(B[:,[i-1 for i in x]]) for x in C]
+    al = [oa.array_link(B[:,[i-1 for i in sorted(x)]]) for x in C]
     # Define the isomorphism classes
-    ind,isoClass = selectIsomorphismClasses(al, verbose=0)
+    ind,isoClass = selectIsomorphismClasses(al, verbose=2)
     # Select one rep. per class
     vals,zz = np.unique(ind, return_index=True)
     zz.sort()
@@ -156,15 +156,6 @@ def rLsmaller(L,Ls):
     b = [i for i in bi2de(Ls.T) if i not in bi2de(L.T)]
     return a[0] < b[0]    
 
-
-def solve_minnonzero(A, b):
-    x1, res, rnk, s = np.linalg.lstsq(A, b,rcond=None)
-    if rnk == A.shape[1]:
-        return x1   # nothing more to do if A is full-rank
-    Q, R, P = qr(A.T, mode='full', pivoting=True)
-    Z = Q[:, rnk:].conj()
-    C = np.linalg.solve(Z[rnk:], -x1[rnk:])
-    return x1 + Z.dot(C)
 
 
 def __rLform(N,cols,verbose=0):
@@ -203,14 +194,10 @@ def __rLform(N,cols,verbose=0):
     # All row permutations 
     perm = list(permutations(range(r)))
     for r in rposs:
-        # # Reject set where last added factor is not included
-        # if lastfac-1 not in r:
-        #     continue
         # Define new set of B.F.
         R = S[:,r]
         # Check if R is singular
-        #if np.linalg.cond(R) >= 1/np.finfo(float).eps or np.linalg.det(R)==0:
-        if np.linalg.cond(R) >= 
+        if np.linalg.cond(R) >= 1/np.finfo(float).eps or np.linalg.det(R)==0:
             # Count as a singular matrix
             singRCount += 1;
             # Print it if verbose is 2 
@@ -220,16 +207,13 @@ def __rLform(N,cols,verbose=0):
             continue 
         # Compute new interactions matrix - L
         K = S[:,[i for i in range(S.shape[1]) if i not in r]]
-        L = abs(np.linalg.solve(R,K)).astype(int)
-        #L = L%2
-        # Check that L is the same rank as K
-        # if not np.array_equal(L, L.astype(bool)):
-        #     L = L.astype(int)
-        #     if not np.array_equal(L, L.astype(bool)):
-        #         continue
+        L = np.linalg.solve(R,K)%2
+        # Check that L is binary
+        if not np.array_equal(L, L.astype(bool)):
+            continue
         # Permute the rows
         for p in perm:
-            Lstar = L[p,:]
+            Lstar = L[p,:].astype(int)
             # Re-arrange L in rL order
             Lstar = Lstar[:,np.argsort(bi2de(Lstar.T))]
             # Test if L is rL-smaller than Lref
