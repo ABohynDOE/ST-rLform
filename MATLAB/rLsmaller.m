@@ -1,15 +1,17 @@
-function out = rLsmaller(L1,L2)
-    % rLsmaller Test if a matrix is rL-smaller than another.
-    %   rLsmaller(A,B) returns True if A is rL-smaller than B, and False
-    %   otherwise.
+function out = rLsmaller(A,B)
+    % rLsmaller Determine if a matrix is rL-smaller than the other.
+    %   rLsmaller(A,B) returns true if A is rL-smaller than B.
+    %   
+    %   Let c be the first column in which A and B differ.
+    %   Let r be the last element in which A(:,c) and B(:,c) differ
+    %   A is rLsmaller than B, is A(r,c) < B(r,c).
     
-    a = col2num(L1);
-    b = col2num(L2);
-    mL1 = a(a~=b); % Find first non-identical column in A
-    if isempty(mL1)
-        out = false; % If A and B are similar, returns False
+    if size(A,2) == 1
+        ind = find(A~=B,1,'last'); 
+        out = A(ind) < B(ind);
         return
     end
-    mL2 = b(a~=b); % Find first non-identical column in B
-    out = mL1(1) < mL2(1); % Check which if is column in A is rL-smaller than column in B
+    colInd = find(all(A~=B),1,'first');
+    rowInd = find(A(:,colInd)~=B(:,colInd),1,'last');
+    out = A(rowInd,colInd) < B(rowInd,colInd);
 end
