@@ -1,6 +1,5 @@
-function iso = pyLMCcheck(N,cols)
-    D = Design(N,cols);
-    npMat = py.numpy.array(D).astype('int');
+function iso = pyLMCcheck(Dmat)
+    npMat = py.numpy.array(Dmat).astype('int');
     oaMat = py.oapackage.array_link(npMat);
     LMCval = py.oapackage.LMCcheck(oaMat);
     iso = LMCval == py.oapackage.LMC_MORE();
