@@ -9,6 +9,6 @@ function R = Rmat(r)
     for ii = 1:r
         a = (2^r)/(2^ii);
         b = (2^r)/(2*a);
-        R(:,ii) = repmat(cat(1,repmat(0,a,1),repmat(1,a,1)),b,1);
+        R(:,ii) = repmat(cat(1,zeros(a,1),ones(a,1)),b,1);
     end
 end
