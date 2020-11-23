@@ -7,12 +7,12 @@ function wlp = WLP(cols,s)
     %   WLP(cols,s) outputs the word-length pattern, ommiting the words of
     %   length less than s.
     
-    arguments
-         cols (:,:) {mustBeNumeric, mustBePositive}
-        s double {mustBeInteger, mustBePositive, mustBeNumeric} = 3
-    end
+%     arguments
+%          cols (:,:) {mustBeNumeric, mustBePositive}
+%         s double {mustBeInteger, mustBePositive, mustBeNumeric} = 3
+%     end
     % Basic values
-    [nd n] = size(cols);
+    [nd,n] = size(cols);
     r = sum(log2(cols(1,:)) == floor(log2(cols(1,:))));
     k = n-r;
     
@@ -23,7 +23,7 @@ function wlp = WLP(cols,s)
     
     % Initiate WLP matrix
     addcols = cols(:,r+1:end);
-    wlp = zeros(nd,n-2);
+    wlp = zeros(nd,n-s+1);
     len = zeros(nd,2^k-1);
     
     % Compute each word
