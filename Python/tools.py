@@ -9,8 +9,11 @@ from scipy.linalg import qr
 ### Basic factor matrix
 def Rmat(r):
     """ Creates the basic factors matrix (N x r), for r basic factors."""
-    b = Gmat(r)
-    return np.flip(b.T,axis=1)
+    R = np.zeros((int(2**r),r))
+    # Alternates 0 and 1 in columns until (0,1) is repeated N/2 times
+    for i in range(r):
+        R[:,i] = ([0]*(2**(r-(i+1)))+[1]*(2**(r-(i+1))))*(2**i)
+    return R.astype(int)
 
 ### Reduced generalized interaction matrix
 def Gmat(r):
@@ -128,13 +131,23 @@ def NAUTYiso(C,r):
     # Converts columns to designs in OA
     al = [oa.array_link(B[:,[i-1 for i in sorted(x)]]) for x in C]
     # Define the isomorphism classes
-    ind,isoClass = selectIsomorphismClasses(al, verbose=2)
+    ind,isoClass = selectIsomorphismClasses(al, verbose=0)
     # Select one rep. per class
     vals,zz = np.unique(ind, return_index=True)
     zz.sort()
     return [C[x] for x in list(zz)]
 
 ### LMC isomorphism
+def LMCiso(C,r):
+    B = Bmat(r);
+    al = [oa.array_link(B[:,[i-1 for i in sorted(x)]])  for x in C]
+    out = []
+    for d in al:
+        if oa.LMCcheck(d) == oa.LMC_MORE:
+            out.append(C[al.index(d)])
+    return out
+
+
 def bi2de(binary):
     # Same basic function as matlab bi2de function
     # Convert a binary array to a decimal number
