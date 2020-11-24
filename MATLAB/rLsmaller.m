@@ -6,12 +6,12 @@ function out = rLsmaller(A,B)
     %   Let r be the last element in which A(:,c) and B(:,c) differ
     %   A is rLsmaller than B, is A(r,c) < B(r,c).
     
+    boolMat = A~=B;
     if size(A,2) == 1
-        ind = find(A~=B,1,'last'); 
-        out = A(ind) < B(ind);
-        return
+        colInd = 1;
+    else
+        colInd = find(any(boolMat,1),1,'first');
     end
-    colInd = find(all(A~=B),1,'first');
-    rowInd = find(A(:,colInd)~=B(:,colInd),1,'last');
+    rowInd = find(boolMat(:,colInd),1,'last');
     out = A(rowInd,colInd) < B(rowInd,colInd);
 end
