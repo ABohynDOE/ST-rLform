@@ -11,6 +11,7 @@ function rL = rLmin(cols)
     S = num2col(sort(cols)); % Reduced design matrix in rL order
     n = size(S,2);
     r = size(S,1);
+    rvec = 2.^(0:r-1);
     rL = true;
     rlst = nchoosek(1:n,r); % All possible set of basic factors
     p = perms(1:r); % All possible row permutations
@@ -29,7 +30,7 @@ function rL = rLmin(cols)
         end
         for jj = 1:length(p) % For all row permutations
             Lstar = L(p(jj,:),:); % Permute the rows
-            [~,idx] = sort(col2num(Lstar));
+            [~,idx] = sort(rvec*Lstar);
             Lstarmin = Lstar(:,idx); % Sort the colums of L in rL-order
             if rLsmaller(Lstarmin,Lref) % Test if new L is rL-smaller
                 rL = false;

@@ -1,8 +1,8 @@
 %% ST - rL-form combination
 % Input parameters
-N = 16; % Nbr of runs
+N = 32; % Nbr of runs
 verbose = true; % Print info about enumeration
-maxfac = 14; % Max number of factors in the catalog
+maxfac = 15; % Max number of factors in the catalog
 
 % Initiate the catalog
 bf = 2.^(0:log2(N)-1); % basic factors
@@ -15,9 +15,11 @@ colsCell = {cols};
 
 % Iterate through values of k
 startcols = cols;
+totalTime = 0;
 for n = log2(N)+1:maxfac
+    tic;
     if verbose
-        fprintf('%i factors\n',n)
+        fprintf('%i factors:',n)
     end
     k = n-log2(N);
     candicols = [];
@@ -38,7 +40,7 @@ for n = log2(N)+1:maxfac
         end
     end
     if verbose
-        fprintf('\t%i candidates\n',size(candicols,1))
+        fprintf('\t%i candidates',size(candicols,1))
     end
     outcols = [];
     % Isomorphism reduction of the candidate designs set
@@ -53,10 +55,13 @@ for n = log2(N)+1:maxfac
         colsCell{end+1} = outcols(ii,:);
     end
     startcols = outcols;
+    t = toc;
+    totalTime = totalTime +t;
     if verbose
-        fprintf('\t%i unique designs\n',size(startcols,1))
+        fprintf('\t%i representatives\t(%.2f sec.)\n',size(startcols,1),t)
     end
 end
+fprintf('Catalog for %i runs generated in %.2f seconds\n',N,totalTime);
 T = table(nMat(:),kMat(:),colsCell','VariableNames',{'n','k','cols'});
 
 
