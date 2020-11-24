@@ -3,7 +3,6 @@ import numpy as np
 import oapackage as oa 
 from itertools import combinations,permutations
 from HadamardTools import selectIsomorphismClasses
-from scipy.linalg import qr
 
 #%% Matrix
 ### Basic factor matrix
@@ -137,73 +136,27 @@ def NAUTYiso(C,r):
     zz.sort()
     return [C[x] for x in list(zz)]
 
-### LMC isomorphism
-def LMCiso(C,r):
-    B = Bmat(r);
-    al = [oa.array_link(B[:,[i-1 for i in sorted(x)]])  for x in C]
-    out = []
-    for d in al:
-        if oa.LMCcheck(d) == oa.LMC_MORE:
-            out.append(C[al.index(d)])
-    return out
 
-
-def bi2de(binary):
-    # Same basic function as matlab bi2de function
-    # Convert a binary array to a decimal number
-    # Read from right to left in binary array
-    bin_temp = 0
-    bin_res = np.zeros(len(binary), dtype=int)
-    for i in range(len(binary)):
-        for j in range(len(binary[i])):
-            bin_temp = bin_temp + binary[i][j] * (2 ** j)
-        bin_res[i] = bin_temp
-        bin_temp = 0
-    return bin_res
-
+def col2num(L):
+    r,n = L.shape
+    rvec = np.array([2**i for i in range(r)])
+    return rvec*L.T
 
 def rLsmaller(L,Ls):
-    a = [i for i in bi2de(L.T) if i not in bi2de(Ls.T)]
-    if a == []:
+    C = L!=Ls
+    colind = np.argmax(C.any(0))
+    rowind = (C.shape[0]-1)-np.argmax(C[:,colind][::-1])
+    if (colind,rowind) ==(0,0):
         return False
-    b = [i for i in bi2de(Ls.T) if i not in bi2de(L.T)]
-    return a[0] < b[0]    
+    return L[rowind,colind] < Ls[rowind,colind]
 
-
-
-def __rLform(N,cols,verbose=0):
-    """
-    Checks if a matrix is in rL-form
-
-    Parameters
-    ----------
-    G : array
-        Design matrix in reduced design matrix form (r x n), with columns in first-to-last-added order.
-    lastfac : int
-        Index of the last added factor, in the input array.
-
-    Returns
-    -------
-    bool
-        Returns True if the array is in rL-form.
-
-    """
-    # Reduced design matrix of the columns
-    r = int(np.log2(N))
-    a = np.array(sorted(cols),dtype=np.uint8)
-    a = a[...,None]
-    b = np.unpackbits(a.T,axis=0,bitorder='little',count=r)
-    S = np.array(b,dtype=int)
-    #lastfac  = cols[-1]
+def rLmin(S):
+    r = S.shape[0]
+    n = S.shape[1]
+    Lref = S[:,S.sum(0)>1];
     
-    # Number of singular matrices
-    singRCount = 0
-    
-    
-    # Reference L matrix
-    Lref =  S[:,S.sum(0)> 1]
     # All B.F. set possibilities
-    rposs = list(combinations(range(S.shape[1]),r))
+    rposs = list(combinations(range(n),r))
     # All row permutations 
     perm = list(permutations(range(r)))
     for r in rposs:
@@ -211,15 +164,9 @@ def __rLform(N,cols,verbose=0):
         R = S[:,r]
         # Check if R is singular
         if np.linalg.cond(R) >= 1/np.finfo(float).eps or np.linalg.det(R)==0:
-            # Count as a singular matrix
-            singRCount += 1;
-            # Print it if verbose is 2 
-            if verbose >= 2:
-                print("R matrix is singular")
-                print(R)
             continue 
         # Compute new interactions matrix - L
-        K = S[:,[i for i in range(S.shape[1]) if i not in r]]
+        K = S[:,[i for i in range(n) if i not in r]]
         L = np.linalg.solve(R,K)%2
         # Check that L is binary
         if not np.array_equal(L, L.astype(bool)):
@@ -228,17 +175,9 @@ def __rLform(N,cols,verbose=0):
         for p in perm:
             Lstar = L[p,:].astype(int)
             # Re-arrange L in rL order
-            Lstar = Lstar[:,np.argsort(bi2de(Lstar.T))]
+            Lstar = Lstar[:,np.argsort(col2num(Lstar))]
             # Test if L is rL-smaller than Lref
             if rLsmaller(Lstar,Lref):
-                if verbose:
-                    print('rL-smaller matrix of added factors found')
-                    print(Lstar)
-                    print('from following basic factors')
-                    print(R)                    
-                    print("Propotion of singular matrices rejected: %.2f %% (%i out of %i)"%(100*singRCount/len(rposs),singRCount,len(rposs)))
                 return False
     return True
 
-def rLiso(N,C):
-    return [col for col in C if __rLform(N, col)]
