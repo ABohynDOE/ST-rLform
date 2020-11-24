@@ -1,0 +1,33 @@
+---rLmin procedure	 --------------------------------------------------
+16 runs - up to 15 factors
+
+6 factors: 17 candidates - 4 representatives		 (-0.13 sec.)
+7 factors: 18 candidates - 5 representatives		 (-0.24 sec.)
+8 factors: 22 candidates - 6 representatives		 (-0.58 sec.)
+9 factors: 18 candidates - 5 representatives		 (-0.74 sec.)
+10 factors: 12 candidates - 4 representatives		 (-1.14 sec.)
+11 factors: 10 candidates - 3 representatives		 (-1.41 sec.)
+12 factors: 8 candidates - 2 representatives		 (-1.63 sec.)
+13 factors: 3 candidates - 1 representatives		 (-1.11 sec.)
+14 factors: 2 candidates - 1 representatives		 (-1.55 sec.)
+15 factors: 1 candidates - 1 representatives		 (-2.40 sec.)
+
+rLmin procedure: Catalog generated in 10.93 seconds
+---------------------------------------------------------------------- 
+
+---NAUTY procedure	 --------------------------------------------------
+16 runs - up to 15 factors
+
+6 factors: 1 candidates - 4 representatives		 (-0.02 sec.)
+7 factors: 1 candidates - 5 representatives		 (-0.03 sec.)
+8 factors: 1 candidates - 6 representatives		 (-0.04 sec.)
+9 factors: 1 candidates - 5 representatives		 (-0.04 sec.)
+10 factors: 1 candidates - 4 representatives		 (-0.03 sec.)
+11 factors: 1 candidates - 3 representatives		 (-0.02 sec.)
+12 factors: 1 candidates - 2 representatives		 (-0.01 sec.)
+13 factors: 1 candidates - 1 representatives		 (-0.01 sec.)
+14 factors: 1 candidates - 1 representatives		 (-0.00 sec.)
+15 factors: 1 candidates - 1 representatives		 (-0.00 sec.)
+
+NAUTY procedure: Catalog generated in 0.21 seconds
+---------------------------------------------------------------------- 

@@ -1,0 +1,31 @@
+---LMC procedure-----------------------------------------------------
+32 runs - up to 15 factors
+
+7 factors: 62 candidates - 8 representatives		 (-0.04 sec.)
+8 factors: 93 candidates - 15 representatives		 (-0.09 sec.)
+9 factors: 169 candidates - 29 representatives		 (-0.26 sec.)
+10 factors: 265 candidates - 46 representatives		 (-0.67 sec.)
+11 factors: 343 candidates - 64 representatives		 (-1.02 sec.)
+12 factors: 409 candidates - 89 representatives		 (-2.25 sec.)
+13 factors: 476 candidates - 112 representatives	 (-3.47 sec.)
+14 factors: 509 candidates - 128 representatives	 (-7.23 sec.)
+15 factors: 513 candidates - 144 representatives	 (-17.56 sec.)
+LMC procedure: Catalog generated in 32.60 seconds
+---------------------------------------------------------------------- 
+
+
+---NAUTY procedure	 --------------------------------------------------
+32 runs - up to 15 factors
+
+7 factors: 58 candidates - 8 representatives		 (-0.04 sec.)
+8 factors: 63 candidates - 15 representatives		 (-0.11 sec.)
+9 factors: 90 candidates - 29 representatives		 (-0.24 sec.)
+10 factors: 140 candidates - 46 representatives		 (-0.59 sec.)
+11 factors: 227 candidates - 64 representatives		 (-1.15 sec.)
+12 factors: 243 candidates - 89 representatives		 (-1.92 sec.)
+13 factors: 257 candidates - 112 representatives	 (-2.47 sec.)
+14 factors: 293 candidates - 128 representatives	 (-4.25 sec.)
+15 factors: 317 candidates - 144 representatives	 (-6.27 sec.)
+
+NAUTY procedure: Catalog generated in 17.05 seconds
+----------------------------------------------------------------------  
